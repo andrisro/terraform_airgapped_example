@@ -11,7 +11,7 @@ stages:
   - terraform:apply
 
 
-terraform_base: 
+.terraform_base: 
   before_script: 
     # copy terraform providers to providers path
     - mkdir -p ${TERRAFORM_PROVIDER_PATH}
@@ -29,13 +29,13 @@ terraform_base:
       - .terraform/
 
 terraform:init:
-  extends: terraform_base
+  extends: .terraform_base
   stage: terraform:init
   script:
     - terraform init
 
 terraform:validate: 
-  extends: terraform_base
+  extends: .terraform_base
   stage: terraform:validate
   script:
     - terraform validate
@@ -45,13 +45,13 @@ terraform:validate:
     expire_in: 1 week
 
 terraform:plan: 
-  extends: terraform_base
+  extends: .terraform_base
   stage: terraform:plan
   script:
     - terraform plan -o $TERRAFORM_PLAN_FILE
 
 terraform:apply: 
-  extends: terraform_base
+  extends: .terraform_base
   stage: terraform:apply
   script:
     - terraform apply $TERRAFORM_PLAN_FILE
