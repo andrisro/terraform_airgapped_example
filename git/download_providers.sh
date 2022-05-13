@@ -7,8 +7,8 @@ export PLUGIN_FILE_NAME=terraform-provider-kubernetes_${PLUGIN_VERSION}_linux_am
 wget https://releases.hashicorp.com/terraform-provider-kubernetes/${PLUGIN_VERSION}/${PLUGIN_FILE_NAME}
 
 # move to directory
-export FILEPATH=/providers_source/registry.terraform.io/hashicorp/kubernetes/${PLUGIN_VERSION}/
-mkdir -p ./providers_source/registry.terraform.io/hashicorp/kubernetes/${PLUGIN_VERSION}/
+export FILEPATH=/usr/share/terraform/providers/registry.terraform.io/hashicorp/kubernetes/${PLUGIN_VERSION}/
+mkdir -p /usr/share/terraform/providers/registry.terraform.io/hashicorp/kubernetes/${PLUGIN_VERSION}/
 
 # move plugin to target directory
 cp ${PLUGIN_FILE_NAME} ./${FILEPATH}/${PLUGIN_FILE_NAME}
