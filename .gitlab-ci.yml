@@ -1,8 +1,10 @@
+# change to your custom private registry
 image: hashicorp/terraform:latest
 
 variables: 
   TERRAFORM_PLAN_FILE: "tfplan.out"
   TERRAFORM_PROVIDER_PATH: "/usr/share/terraform/providers"
+  TERRAFORM_PROJECT_DIR: "/terraform/"
 
 stages: 
   - terraform:init
@@ -20,13 +22,14 @@ stages:
     - chmod -R +x ${TERRAFORM_PROVIDER_PATH}
     # apply terraform settings
     - cp .terraformrc ~/.terraformrc
+    - cd ${TERRAFORM_PROJECT_DIR}
 
   # Cache modules in between jobs, if cache is not configured in gitlab runner, use artifacts!
   cache:
     key: $CI_COMMIT_REF_SLUG
     untracked: true
     paths:
-      - .terraform/
+      - ${TERRAFORM_PROJECT_DIR}/.terraform/
 
 terraform:init:
   extends: .terraform_base
