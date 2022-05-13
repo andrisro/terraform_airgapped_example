@@ -1,0 +1,59 @@
+image: hashicorp/terraform:latest
+
+variables: 
+  TERRAFORM_PLAN_FILE: "tfplan.out"
+  TERRAFORM_PROVIDER_PATH: "/usr/share/terraform/providers"
+
+stages: 
+  - terraform:init
+  - terraform:validate
+  - terraform:plan
+  - terraform:apply
+
+
+terraform_base: 
+  before_script: 
+    # copy terraform providers to providers path
+    - mkdir -p ${TERRAFORM_PROVIDER_PATH}
+    - cp -R providers_source/ ${TERRAFORM_PROVIDER_PATH}
+    # add execution permissions
+    - chmod -R +x ${TERRAFORM_PROVIDER_PATH}
+    # apply terraform settings
+    - cp .terraformrc ~/.terraformrc
+
+  # Cache modules in between jobs, if cache is not configured in gitlab runner, use artifacts!
+  cache:
+    key: $CI_COMMIT_REF_SLUG
+    untracked: true
+    paths:
+      - .terraform/
+
+terraform:init:
+  extends: terraform_base
+  stage: terraform:init
+  script:
+    - terraform init
+
+terraform:validate: 
+  extends: terraform_base
+  stage: terraform:validate
+  script:
+    - terraform validate
+  artifacts:
+    paths:
+      - .terraform/
+    expire_in: 1 week
+
+terraform:plan: 
+  extends: terraform_base
+  stage: terraform:plan
+  script:
+    - terraform plan -o $TERRAFORM_PLAN_FILE
+
+terraform:apply: 
+  extends: terraform_base
+  stage: terraform:apply
+  script:
+    - terraform apply $TERRAFORM_PLAN_FILE
+  when: 
+    manual
